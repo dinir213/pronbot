@@ -4,7 +4,7 @@ from aiogram import types, Dispatcher
 from create_bot import bot
 import asyncio
 from database.profile_db import check_args, create_profile, get_profile_language
-from keyboards.client_kb import create_first_kb, create_second_kb
+from keyboards.client_kb import create_first_kb, create_second_kb, create_third_kb
 from database.check_click_btn import get_data_from_button_clicks, insert_in_button_clicks, delete_data_from_button_clicks, increase_in_clicks
 first_msg = {
     'ru': 'Добрый день! Рады приветствовать вас в официальном боте от топовой студии NRX \n\n Мы славимся самыми интересными и качественными видео с русскими тинками! Такие как gangbang, deep anal, pissdrink, rought и многие другие! Вы точно найдете для себя, то, что вам понравится',
@@ -39,42 +39,53 @@ fourth_msg = {
     'fr': ", bonne journée! Ayez le temps d'accéder à nos vidéos pendant que l'action est en cours!+ bouton sur le site",
     'it': ', buona giornata! Avere il tempo di accedere ai nostri video mentre la promozione è attiva!+ pulsante al sito'
 }
-
+five_msg = {
+    'ru': 'Переходи по ссылке',
+    'en': 'Follow the link',
+    'de': 'Klicke auf den Link',
+    'es': 'Sigue el enlace',
+    'pt': 'Clique aqui',
+    'iw': 'עקוב אחר הקישור',
+    'zh': '按照链接',
+    'fr': 'Suivez le lien',
+    'it': 'Segui il link'
+}
 
 async def command_start(message: types.Message):
     args = message.get_args() # /start 123123
     now_time = int(time.time())
-    referer = await check_args(args, message.from_user.id)
-    await bot.send_message(message.from_user.id, first_msg[referer[1]], reply_markup=(await create_first_kb()))
+    referer = await check_args(args, str(message.from_user.id))
+    await bot.send_message(message.from_user.id, first_msg[referer[1]], reply_markup=(await create_first_kb(language=referer[1])))
     await message.delete()
     await insert_in_button_clicks(message.from_user.id, message.from_user.first_name, now_time)
     await create_profile(message, my_referer=referer[0], language_interface=referer[1], registration_time=now_time)
+
 async def view_second_text(call: types.CallbackQuery):
     user_id = call.from_user.id
     language = await get_profile_language(user_id)
     await delete_data_from_button_clicks(user_id)
     await increase_in_clicks('click_on_1_button', user_id, int(time.time()))
-    await call.message.answer(second_msg[language], reply_markup=(await create_second_kb()))
-
+    await call.message.answer(second_msg[language], reply_markup=(await create_second_kb(language)))
+    await bot.answer_callback_query(call.id)
 async def check_and_send():
     while True:
-        print(f'Метка 1. Время сейчас: {time.time()}')
+        # print(f'Метка 1. Время сейчас: {time.time()}')
         for user_id, first_name, click_time in (await get_data_from_button_clicks()):
             current_time = int(time.time())
             # click_time = datetime.fromisoformat(click_time_str)
-            print(f'Метка 2. Время сейчас: {current_time}, current_time - click_time: {current_time} - {click_time}')
+            # print(f'Метка 2. Время сейчас: {current_time}, current_time - click_time: {current_time} - {click_time}')
             if current_time - int(click_time) >= 10:
-                print(f'Метка 3. Время сейчас: {time.time()}')
+                # print(f'Метка 3. Время сейчас: {time.time()}')
                 language = await get_profile_language(user_id)
-
-                await bot.send_message(user_id, f"{first_name}{fourth_msg[language]}")
+                await bot.send_message(user_id, f"{first_name}{fourth_msg[language]}", reply_markup=(await create_first_kb(language)))
                 await delete_data_from_button_clicks(user_id)
         await asyncio.sleep(3)  # Проверка каждые 5 минут
 async def view_third_text(call: types.CallbackQuery):
     user_id = call.from_user.id
-
-    await call.message.answer("Здесь линк")
+    language = await get_profile_language(user_id)
+    await call.message.answer("👇 " + five_msg[language] + " 👇", reply_markup=(await create_third_kb(language)))
     await increase_in_clicks('click_on_2_button', user_id, int(time.time()))
+    await bot.answer_callback_query(call.id)
 
 
 def register_handlers_client(dp: Dispatcher):
