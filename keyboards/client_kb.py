@@ -31,4 +31,4 @@ async def create_first_kb(language):
 async def create_second_kb(language):
     return InlineKeyboardMarkup().add(InlineKeyboardButton(text=(await transl_buttons2(language)), callback_data='view_third_text'))
 async def create_third_kb(language):
-    return InlineKeyboardMarkup().add(InlineKeyboardButton(text=(await transl_buttons2(language)), url='https://www.youtube.com/watch?v=xm3YgoEiEDc'))
+    return InlineKeyboardMarkup().add(InlineKeyboardButton(text=(await transl_buttons2(language)), url='https://www.studionrx.com'))
