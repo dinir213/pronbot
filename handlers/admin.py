@@ -1,10 +1,11 @@
 from aiogram import types, Dispatcher
 from create_bot import bot
 from keyboards.admin_kb import create_admin_kb, create_admin_back_menu_kb
-from database.profile_db import get_count_all_profiles, get_count_profiles_in_24hours, get_count_clicks_on_1_btn, get_count_clicks_on_2_btn, get_count_profiles_for_referer, get_count_clicks_on_1_or_2_btn_for_referer, get_referer_code, get_partner_user_ids, input_partner_user_ids, get_profile_language, get_partner_datas, del_partner_data, get_partner_referer_codes
+from database.profile_db import get_count_all_profiles, get_count_profiles_in_24hours, get_count_clicks_on_1_btn, get_count_clicks_on_2_btn, get_count_profiles_for_referer, get_count_clicks_on_1_or_2_btn_for_referer, get_referer_code, get_partner_user_ids, input_partner_user_ids, get_profile_language, get_partner_datas, del_partner_data, get_partner_referer_codes, get_all_users_db
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher import FSMContext
 from create_bot import admin_id
+from os import remove
 class Referers(StatesGroup):
     referer_code = State()
     user_id = State()
@@ -188,7 +189,7 @@ async def view_statistic(call: types.CallbackQuery):
             print('Все рефералы', all_referers)
 
             msg = ''
-            if all_referers != None:
+            if all_referers != []:
 
                 for referer_code in all_referers:
                     count_start_users = await get_count_profiles_for_referer(referer_code[0])
@@ -249,6 +250,22 @@ async def delete_referer_phase2(message: types.Message):
     await del_partner_data(del_user_id)
     text = await del_referer_msg(language)
     await message.answer(f'{text} {del_user_id}')
+
+
+async def get_users_func(call: types.CallbackQuery):
+    all_users = await get_all_users_db()
+    print(all_users)
+    try:
+        with open("users.txt", "w") as file:
+            for user_id in all_users:
+                file.write(user_id[0] + '\n')
+        f = open("users.txt", "rb")
+        await bot.send_document(document=f, chat_id=call.from_user.id)
+        remove("users.txt")
+    except:
+        await call.message.answer("Error")
+    await bot.answer_callback_query(call.id)
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(admin_panel, commands=['admin'], state="*")
     dp.register_callback_query_handler(admin_panel_callback, text=['admin'], state="*")
@@ -258,3 +275,5 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(add_referer_user_id, state=Referers.user_id)
     dp.register_callback_query_handler(delete_referer, text=['delete_referer'])
     dp.register_message_handler(delete_referer_phase2, text_startswith=['/del_'])
+    dp.register_callback_query_handler(get_users_func, text=['get_users'])
+

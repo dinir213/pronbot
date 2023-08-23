@@ -46,12 +46,25 @@ async def create_admin_kb(language, user_id):
         'fr': "Suppression d'une référence",
         'it': "Rimozione del referral"
     }
+    text4 = {
+        'ru': "Выгрузка юзеров",
+        'en': "Unloading",
+        'de': "Entladung",
+        'es': "Descarga",
+        'pt': "Descarregando",
+        'iw': "פְּרִיקָה",
+        'zh': "卸貨",
+        'fr': "Déchargement",
+        'it': "Scarico"
+    }
     if user_id == admin_id:
         return InlineKeyboardMarkup(row_width=2).add(
             types.InlineKeyboardButton(text=text0[language], callback_data='statistic_common'),
             types.InlineKeyboardButton(text=text1[language], callback_data='statistic_single'),
             types.InlineKeyboardButton(text=text2[language], callback_data='add_referer'),
             types.InlineKeyboardButton(text=text3[language], callback_data='delete_referer')
+        ).add(
+            types.InlineKeyboardButton(text=text4[language], callback_data='get_users')
         )
     else:
         return InlineKeyboardMarkup(row_width=1).add(

@@ -1,0 +1,15 @@
+[Unit]
+Description=bot
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/bot/pron/systemd
+ExecStart=/bot/pron/venv/bin/python3 /bot/pron/main.py
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
