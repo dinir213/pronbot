@@ -65,7 +65,7 @@ async def get_referer_code(user_id):
 async def get_partner_user_ids():
     return cur.execute("SELECT user_id FROM referers").fetchone()
 async def get_partner_referer_codes():
-    return cur.execute("SELECT referer_code FROM referers").fetchone()
+    return cur.execute("SELECT referer_code FROM referers").fetchall()
 async def get_partner_datas():
     return cur.execute("SELECT * FROM referers").fetchall()
 async def input_partner_user_ids(referer_code, user_id):

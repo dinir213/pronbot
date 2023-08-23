@@ -37,16 +37,16 @@ async def msg_menu(language):
     return msg_admin_menu[language]
 async def msg_view_statistic_single(referer_code, count_start_users, count_click_1_btn_users, count_click_2_btn_users, language):
     msg_view_statistic_single = {
-        'ru': f'Реферер: {referer_code}\n\nВсего пользователей: {count_start_users}\nПользователей, нажавших на 1-ую кнопку: {count_click_1_btn_users}\nПользователей, нажавших на 2-ую кнопку: {count_click_2_btn_users}',
-        'en': f"Referrer: {referer_code}\n\nTotal users: {count_start_users}\nUsers who clicked on the 1st button: {count_click_1_btn_users}\nUsers who clicked on the 2nd button: {count_click_2_btn_users}",
+        'ru': f'Реферер: {referer_code}\n\nВсего пользователей: {count_start_users}\nПользователей, нажавших на 1-ую кнопку: {count_click_1_btn_users}\nПользователей, нажавших на 2-ую кнопку: {count_click_2_btn_users}\n',
+        'en': f"Referrer: {referer_code}\n\nTotal users: {count_start_users}\nUsers who clicked on the 1st button: {count_click_1_btn_users}\nUsers who clicked on the 2nd button: {count_click_2_btn_users}\n",
 
-        'de': f"Referrer: {referer_code}\n\nBenutzer insgesamt: {count_start_users}\nBenutzer, die auf die 1. Schaltfläche geklickt haben: {count_click_1_btn_users}\nBenutzer, die auf die 2. Schaltfläche geklickt haben: {count_click_2_btn_users}",
-        'es': f"Referente: {referer_code}\n\nTotal de usuarios: {count_start_users}\nUsuarios que han pulsado el botón 1: {count_click_1_btn_users}\nUsuarios que han pulsado el segundo botón: {count_click_2_btn_users}",
-        'pt': f"Referenciador: {referer_code}\n\nTotal de utilizadores: {count_start_users}\nUsuários que clicaram no botão 1: {count_click_1_btn_users}\nUsuários que clicaram no botão 2: {count_click_2_btn_users}",
-        'iw': f'מפנה: {referer_code} \n\n סה " כ משתמשים: {count_start_users} \n\n משתמשים שלחצו על כפתור 1: {count_click_1_btn_users} \n\n משתמשים שלחצו על כפתור 2: {count_click_2_btn_users}',
-        'zh': f"推荐人: {referer_code}\n\n用户总数: {count_start_users}\n点击第一个按钮的用户: {count_click_1_btn_users}\n点击第二个按钮的用户: {count_click_2_btn_users}",
-        'fr': f"Référent: {referer_code}\n\nNombre total d'utilisateurs: {count_start_users}\nUtilisateurs ayant cliqué sur le 1er bouton: {count_click_1_btn_users}\nUtilisateurs qui ont cliqué sur le 2ème bouton: {count_click_2_btn_users}",
-        'it': f"Referrer: {referer_code}\n\nTotale utenti: {count_start_users}\nUtenti che hanno fatto clic sul primo pulsante: {count_click_1_btn_users}\nUtenti che hanno fatto clic sul secondo pulsante: {count_click_2_btn_users}"
+        'de': f"Referrer: {referer_code}\n\nBenutzer insgesamt: {count_start_users}\nBenutzer, die auf die 1. Schaltfläche geklickt haben: {count_click_1_btn_users}\nBenutzer, die auf die 2. Schaltfläche geklickt haben: {count_click_2_btn_users}\n",
+        'es': f"Referente: {referer_code}\n\nTotal de usuarios: {count_start_users}\nUsuarios que han pulsado el botón 1: {count_click_1_btn_users}\nUsuarios que han pulsado el segundo botón: {count_click_2_btn_users}\n",
+        'pt': f"Referenciador: {referer_code}\n\nTotal de utilizadores: {count_start_users}\nUsuários que clicaram no botão 1: {count_click_1_btn_users}\nUsuários que clicaram no botão 2: {count_click_2_btn_users}\n",
+        'iw': f'מפנה: \n{referer_code} \n\n סה " כ משתמשים: {count_start_users} \n\n משתמשים שלחצו על כפתור 1: {count_click_1_btn_users} \n\n משתמשים שלחצו על כפתור 2: {count_click_2_btn_users}',
+        'zh': f"推荐人: {referer_code}\n\n用户总数: {count_start_users}\n点击第一个按钮的用户: {count_click_1_btn_users}\n点击第二个按钮的用户: {count_click_2_btn_users}\n",
+        'fr': f"Référent: {referer_code}\n\nNombre total d'utilisateurs: {count_start_users}\nUtilisateurs ayant cliqué sur le 1er bouton: {count_click_1_btn_users}\nUtilisateurs qui ont cliqué sur le 2ème bouton: {count_click_2_btn_users}\n",
+        'it': f"Referrer: {referer_code}\n\nTotale utenti: {count_start_users}\nUtenti che hanno fatto clic sul primo pulsante: {count_click_1_btn_users}\nUtenti che hanno fatto clic sul secondo pulsante: {count_click_2_btn_users}\n"
     }
     return msg_view_statistic_single[language]
 async def msg_view_statistic_common(count_all_users, count_users_in_24hours, count_clicks_on_1_btn, count_clicks_on_2_btn, language):
@@ -184,15 +184,22 @@ async def view_statistic(call: types.CallbackQuery):
             count_click_2_btn_users = await get_count_clicks_on_1_or_2_btn_for_referer('click_on_2_button', referer_code)
             await call.message.edit_text((await msg_view_statistic_single(referer_code, count_start_users, count_click_1_btn_users, count_click_2_btn_users, language)), reply_markup=(await create_admin_back_menu_kb(language)))
         elif user_id == admin_id:
-            all_referers = await get_partner_referer_codes()
+            all_referers = (await get_partner_referer_codes())
+            print('Все рефералы', all_referers)
+
             msg = ''
-            print(all_referers)
             if all_referers != None:
+
                 for referer_code in all_referers:
-                    count_start_users = await get_count_profiles_for_referer(referer_code)
-                    count_click_1_btn_users = await get_count_clicks_on_1_or_2_btn_for_referer('click_on_1_button', referer_code)
-                    count_click_2_btn_users = await get_count_clicks_on_1_or_2_btn_for_referer('click_on_2_button', referer_code)
-                    msg = msg + (await msg_view_statistic_single(referer_code, count_start_users, count_click_1_btn_users, count_click_2_btn_users, language))
+                    count_start_users = await get_count_profiles_for_referer(referer_code[0])
+                    count_click_1_btn_users = await get_count_clicks_on_1_or_2_btn_for_referer('click_on_1_button', referer_code[0])
+                    count_click_2_btn_users = await get_count_clicks_on_1_or_2_btn_for_referer('click_on_2_button', referer_code[0])
+                    msg = msg + (await msg_view_statistic_single(referer_code[0], count_start_users, count_click_1_btn_users, count_click_2_btn_users, language))
+                if len(msg) > 4095:
+                    for x in range(0, len(msg), 4095):
+                        await call.message.answer(msg[x:x + 4095], reply_markup=(await create_admin_back_menu_kb(language)))
+                else:
+                    await call.message.edit_text(msg, reply_markup=(await create_admin_back_menu_kb(language)))
             else:
                 await call.message.edit_text((await msg_create_referal_to_view(language)), reply_markup=(await create_admin_back_menu_kb(language)))
     else:
