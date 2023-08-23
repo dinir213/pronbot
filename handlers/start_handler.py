@@ -56,7 +56,7 @@ async def command_start(message: types.Message):
     now_time = int(time.time())
     referer = await check_args(args, str(message.from_user.id))
     # await bot.send_message(message.from_user.id, first_msg[referer[1]], reply_markup=(await create_first_kb(language=referer[1])))
-    photo_url = 'imgs/first.jpg'
+    photo_url = '/bot/pron/imgs/first.jpg'
     with open(photo_url, 'rb') as photo_file:
         await bot.send_photo(photo=photo_file, chat_id=message.from_user.id,
                              caption=first_msg[referer[1]],
@@ -72,7 +72,7 @@ async def view_second_text(call: types.CallbackQuery):
     await delete_data_from_button_clicks(user_id)
     await increase_in_clicks('click_on_1_button', user_id, int(time.time()))
     # await call.message.answer(second_msg[language], reply_markup=(await create_second_kb(language)))
-    photo_url = 'imgs/second.jpg'
+    photo_url = '/bot/pron/imgs/second.jpg'
     with open(photo_url, 'rb') as photo_file:
         await bot.send_photo(photo=photo_file, chat_id=call.from_user.id,
                              caption=second_msg[language],
@@ -81,17 +81,13 @@ async def view_second_text(call: types.CallbackQuery):
     await bot.answer_callback_query(call.id)
 async def check_and_send():
     while True:
-        # print(f'Метка 1. Время сейчас: {time.time()}')
         for user_id, first_name, click_time in (await get_data_from_button_clicks()):
             current_time = int(time.time())
-            # click_time = datetime.fromisoformat(click_time_str)
-            # print(f'Метка 2. Время сейчас: {current_time}, current_time - click_time: {current_time} - {click_time}')
-            if current_time - int(click_time) >= 10:
-                # print(f'Метка 3. Время сейчас: {time.time()}')
+            if current_time - int(click_time) >= (12*3600):
                 language = await get_profile_language(user_id)
                 await bot.send_message(user_id, f"{first_name}{fourth_msg[language]}", reply_markup=(await create_first_kb(language)))
                 await delete_data_from_button_clicks(user_id)
-        await asyncio.sleep(3)  # Проверка каждые 5 минут
+        await asyncio.sleep(300)  # Проверка каждые 5 минут
 async def view_third_text(call: types.CallbackQuery):
     user_id = call.from_user.id
     language = await get_profile_language(user_id)
