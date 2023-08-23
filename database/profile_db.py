@@ -74,3 +74,5 @@ async def input_partner_user_ids(referer_code, user_id):
 async def del_partner_data(user_id):
     cur.execute("DELETE FROM referers WHERE user_id == '{key}'".format(key=user_id))
     db.commit()
+async def get_all_users_db():
+    return cur.execute("SELECT user_id FROM profile").fetchall()
